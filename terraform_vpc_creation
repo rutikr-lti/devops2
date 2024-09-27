@@ -1,0 +1,96 @@
+provider "aws" {
+  region = "ap-south-1"
+}
+
+resource "aws_security_group" "custom-sg" {
+  name        = "custom-sg"
+  description = "Allow SSH and HTTP traffic"
+  vpc_id      = aws_vpc.custom1.id
+
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+resource "aws_instance" "my_instance" {
+  ami           = "ami-08718895af4dfa033" # Replace with a valid AMI ID for your region
+  instance_type = "t2.micro"
+  key_name      = "dev"
+  #vpc_id                 = aws_vpc.custom1.id
+  subnet_id       = aws_subnet.cust_sub.id
+  security_groups = [aws_security_group.custom-sg.id]
+
+  tags = {
+    Name = "MyInstance"
+  }
+}
+
+resource "aws_ebs_volume" "example" {
+  availability_zone = "ap-south-1b"
+  size              = 5
+
+  tags = {
+    Name = "HelloWorld"
+  }
+}
+resource "aws_volume_attachment" "ebs_att" {
+  device_name = "/dev/sdh"
+  volume_id   = aws_ebs_volume.example.id
+  instance_id = aws_instance.my_instance.id
+
+}
+
+resource "aws_vpc" "custom1" {
+  cidr_block       = "10.0.0.0/16"
+  instance_tenancy = "default"
+}
+
+resource "aws_subnet" "cust_sub" {
+  vpc_id     = aws_vpc.custom1.id
+  cidr_block = "10.0.1.0/24"
+  #map_public_ip_on_launch = true
+
+  tags = {
+    Name = "Main"
+  }
+}
+resource "aws_internet_gateway" "ig1" {
+  vpc_id = aws_vpc.custom1.id
+
+  tags = {
+    Name = "ig1"
+  }
+}
+resource "aws_route_table" "rt1" {
+  vpc_id = aws_vpc.custom1.id
+
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.ig1.id
+  }
+
+  tags = {
+    Name = "rt1"
+  }
+}
+resource "aws_route_table_association" "as" {
+  subnet_id      = aws_subnet.cust_sub.id
+  route_table_id = aws_route_table.rt1.id
+}
