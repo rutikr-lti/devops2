@@ -1,0 +1,33 @@
+commands:
+aws ecs create-cluster --cluster-name mycluster1
+vim task-definition.json
+aws ecs register-task-definition --cli-input-json file://task-definition.json
+aws ecs create-service   --cluster mycluster1   --service-name my-service   --task-definition my-task   --desired-count 1   --launch-type FARGATE   --network-configuration "awsvpcConfiguration={subnets=[subnet-0ca77c1ad6ba4fb07],securityGroups=[sg-029eb7b59b83a8275],assignPublicIp=ENABLED}"
+
+
+
+ #task-definition file :
+ {
+  "family": "my-task",
+  "networkMode": "awsvpc",
+  "containerDefinitions": [
+    {
+      "name": "my-container",
+      "image": "039612874025.dkr.ecr.ap-south-1.amazonaws.com/my-data:latest",
+      "essential": true,
+      "memory": 512,
+      "cpu": 256,
+      "portMappings": [
+        {
+          "containerPort": 8080,
+          "hostPort": 8080
+        }
+      ]
+    }
+  ],
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "256",
+  "memory": "512",
+  "executionRoleArn": "arn:aws:iam::039612874025:role/ecsTaskExecutionRole", # this will be there just copy arn and paste it here.
+  "taskRoleArn": "arn:aws:iam::039612874025:role/ecsrole"  # this role to be created using iam role > create role > aws service > use case select "Elastic Container Service" > select "Elastic Container Service Task" > next > attach policies "AmazonEC2ContainerRegistryFullAccess", "AmazonECSTaskExecutionRolePolicy","AmazonECS_FullAccess" > create role > copy arn of this role.
+}
