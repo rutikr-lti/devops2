@@ -7,17 +7,20 @@
  unzip awscliv2.zip
  sudo ./aws/install
  aws configure
-
+ ```
  ## Install EKS Tool
  ```curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
  sudo mv /tmp/eksctl /usr/local/bin
  eksctl version
+ ```
  ## Install Kubectl
  ```curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
  sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl 
- kubectl version --client```
+ kubectl version --client
+ ```
  ## Create EKS Cluster
- ```eksctl create cluster --name my-cluster --region region-code --version 1.29 --vpc-public-subnets subnet-ExampleID1,subnet-ExampleID2 --without-nodegroup```
+ ```eksctl create cluster --name my-cluster --region region-code --version 1.29 --vpc-public-subnets subnet-ExampleID1,subnet-ExampleID2 --without-nodegroup
+ ```
 
  ## Create a Node Group
  ```eksctl create nodegroup \
@@ -31,20 +34,24 @@
   --nodes-min 2 \
   --nodes-max 4 \
   --ssh-access \
-  --ssh-public-key /root/.ssh/id_rsa.pub```
+  --ssh-public-key /root/.ssh/id_rsa.pub
+ ```
 
 
 
 
  ## When You want to delete cluster
- ```eksctl delete cluster --name my-cluster```
+ ```eksctl delete cluster --name my-cluster
+ ```
 
 ## some eks commands
-```eksctl get cluster ```
+```eksctl get cluster
+```
 ## some kubectl commands
 ```kubectl get all
 kubectl get svc
 kubectl get pods
 kubetcl get nodes
 kubetcl get deployments
-kubectl apply -f file_name```
+kubectl apply -f file_name
+```
