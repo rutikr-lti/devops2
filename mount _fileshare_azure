@@ -1,0 +1,6 @@
+sudo apt update
+sudo apt install cifs-utils
+
+sudo mkdir -p /mnt/azure
+
+sudo mount -t cifs //<storage_account_name>.file.core.windows.net/<file_share_name> /mnt/azure -o vers=3.0,username=<storage_account_name>,password=<storage_account_key>,dir_mode=0777,file_mode=0777,serverino
